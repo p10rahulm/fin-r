@@ -1,6 +1,7 @@
 
 
 get2yeardata <- function(symbol){
+  symbol <- gsub("&","%26",symbol)
   url <- paste0("https://www.nseindia.com/marketinfo/sym_map/symbolCount.jsp?symbol=",symbol)
   symbolcount <- GET(url, add_headers("Accept"="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
                                       "Accept-Encoding"="gzip, deflate, br",
@@ -73,4 +74,20 @@ running_window_function <- function(fn,x, w, date_asc_bool){
     }
   }
   return(runf)
+}
+
+# Longest running increase
+lsr <- function(x){
+  l <- length(x)
+  output <- integer(l)
+  intermediate <- rep(1,l)
+  i = 1
+  tsum = T
+  while(tsum){
+    intermediate <- intermediate * c((x[i:(l-1)]<=x[(1+i):l])*1,rep(0,i))
+    output <- output + intermediate
+    if(sum(intermediate)==0){tsum=F}
+    i = i+1
+  }
+  return(output)
 }
